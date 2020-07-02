@@ -1,0 +1,280 @@
+@prefix f: <https://flu-crew.org/term/> .
+@prefix fid: <https://flu-crew.org/id/> .
+@prefix ns1: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix usa: <https://flu-crew.org/geo/country/usa/> .
+@prefix world: <https://flu-crew.org/geo/country/> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+f:submission_date rdfs:subPropertyOf f:date .
+
+<https://flu-crew.org/id/a%2Fswine%2Fbac_ninh%2F12_01_3%2F2015> ns1:sameAs fid:epi_isl_218508 ;
+    f:country world:VNM ;
+    f:date "2015-12-07"^^xsd:date ;
+    f:has_segment fid:epi744022,
+        fid:epi744023,
+        fid:epi744024,
+        fid:epi744025,
+        fid:epi744026,
+        fid:epi744027,
+        fid:epi744028,
+        fid:epi744029 ;
+    f:host "swine" ;
+    f:strain_name "A/swine/Bac_Ninh/12-01-3/2015" ;
+    f:submission_date "2016-04-26"^^xsd:date ;
+    f:subtype "H1N1" .
+
+<https://flu-crew.org/id/a%2Fswine%2Fiowa%2Fa02478617%2F2019> ns1:sameAs fid:a02478617,
+        fid:epi_isl_393493 ;
+    f:country world:USA ;
+    f:date "2019-08-19"^^xsd:date ;
+    f:has_segment fid:epi1601841,
+        fid:epi1601842,
+        fid:mn436834,
+        fid:mn436835 ;
+    f:host "swine" ;
+    f:state usa:IA ;
+    f:strain_name "A/swine/Iowa/A02478617/2019" ;
+    f:submission_date "2019-09-11"^^xsd:date ;
+    f:subtype "H3N2" .
+
+<https://flu-crew.org/id/a%2Fswine%2Fminnesota%2Fa02245227%2F2019> ns1:sameAs fid:a02245227,
+        fid:epi_isl_393495 ;
+    f:country world:USA ;
+    f:date "2019-08-28"^^xsd:date ;
+    f:has_segment fid:epi1601851,
+        fid:epi1601852,
+        fid:mn447202,
+        fid:mn447203 ;
+    f:host "swine" ;
+    f:state usa:MN ;
+    f:strain_name "A/swine/Minnesota/A02245227/2019" ;
+    f:submission_date "2019-09-12"^^xsd:date ;
+    f:subtype "H1N1" .
+
+<https://flu-crew.org/id/a%2Fswine%2Fvirginia%2Fa02478581%2F2019> ns1:sameAs fid:a02478581,
+        fid:epi_isl_393494 ;
+    f:country world:USA ;
+    f:date "2019-04-22"^^xsd:date ;
+    f:has_segment fid:epi1601843,
+        fid:epi1601844,
+        fid:epi1601845,
+        fid:epi1601846,
+        fid:epi1601847,
+        fid:epi1601848,
+        fid:epi1601849,
+        fid:epi1601850,
+        fid:mn436836,
+        fid:mn436837,
+        fid:mn436838,
+        fid:mn436839,
+        fid:mn436840,
+        fid:mn436841,
+        fid:mn436842,
+        fid:mn436843 ;
+    f:host "swine" ;
+    f:state usa:VA ;
+    f:strain_name "A/swine/Virginia/A02478581/2019" ;
+    f:submission_date "2019-09-11"^^xsd:date ;
+    f:subtype "H3N2" .
+
+fid:a02245227 f:barcode "A02245227" .
+
+fid:a02478581 f:barcode "A02478581" .
+
+fid:a02478617 f:barcode "A02478617" .
+
+fid:epi_isl_218508 ns1:sameAs <https://flu-crew.org/id/a%2Fswine%2Fbac_ninh%2F12_01_3%2F2015> ;
+    f:barcode "EPI_ISL_218508" ;
+    f:country world:VNM ;
+    f:date "2015-12-07"^^xsd:date ;
+    f:has_segment fid:epi744022,
+        fid:epi744023,
+        fid:epi744024,
+        fid:epi744025,
+        fid:epi744026,
+        fid:epi744027,
+        fid:epi744028,
+        fid:epi744029 ;
+    f:host "swine" ;
+    f:submission_date "2016-04-26"^^xsd:date ;
+    f:subtype "H1N1" .
+
+fid:epi_isl_393493 ns1:sameAs <https://flu-crew.org/id/a%2Fswine%2Fiowa%2Fa02478617%2F2019> ;
+    f:barcode "EPI_ISL_393493" ;
+    f:country world:USA ;
+    f:date "2019-08-19"^^xsd:date ;
+    f:has_segment fid:epi1601841,
+        fid:epi1601842,
+        fid:mn436834,
+        fid:mn436835 ;
+    f:host "swine" ;
+    f:submission_date "2019-09-11"^^xsd:date ;
+    f:subtype "H3N2" .
+
+fid:epi_isl_393494 ns1:sameAs <https://flu-crew.org/id/a%2Fswine%2Fvirginia%2Fa02478581%2F2019> ;
+    f:barcode "EPI_ISL_393494" ;
+    f:country world:USA ;
+    f:date "2019-04-22"^^xsd:date ;
+    f:has_segment fid:epi1601843,
+        fid:epi1601844,
+        fid:epi1601845,
+        fid:epi1601846,
+        fid:epi1601847,
+        fid:epi1601848,
+        fid:epi1601849,
+        fid:epi1601850,
+        fid:mn436836,
+        fid:mn436837,
+        fid:mn436838,
+        fid:mn436839,
+        fid:mn436840,
+        fid:mn436841,
+        fid:mn436842,
+        fid:mn436843 ;
+    f:host "swine" ;
+    f:submission_date "2019-09-11"^^xsd:date ;
+    f:subtype "H3N2" .
+
+fid:epi_isl_393495 ns1:sameAs <https://flu-crew.org/id/a%2Fswine%2Fminnesota%2Fa02245227%2F2019> ;
+    f:barcode "EPI_ISL_393495" ;
+    f:country world:USA ;
+    f:date "2019-08-28"^^xsd:date ;
+    f:has_segment fid:epi1601851,
+        fid:epi1601852,
+        fid:mn447202,
+        fid:mn447203 ;
+    f:host "swine" ;
+    f:submission_date "2019-09-12"^^xsd:date ;
+    f:subtype "H1N1" .
+
+fid:epi744022 f:epi_id "EPI744022" ;
+    f:lineage "pdm09" ;
+    f:segment_name "NP" .
+
+fid:epi744023 f:epi_id "EPI744023" ;
+    f:lineage "pdm09" ;
+    f:segment_name "NS" .
+
+fid:epi744024 f:epi_id "EPI744024" ;
+    f:lineage "pdm09" ;
+    f:segment_name "M" .
+
+fid:epi744025 f:epi_id "EPI744025" ;
+    f:lineage "pdm09" ;
+    f:segment_name "PA" .
+
+fid:epi744026 f:epi_id "EPI744026" ;
+    f:lineage "pdm09" ;
+    f:segment_name "PB2" .
+
+fid:epi744027 f:epi_id "EPI744027" ;
+    f:lineage "pdm09" ;
+    f:segment_name "PB1" .
+
+fid:epi744028 f:epi_id "EPI744028" ;
+    f:lineage "pdm09" ;
+    f:segment_name "NA" .
+
+fid:epi744029 f:epi_id "EPI744029" ;
+    f:lineage "pdm09" ;
+    f:segment_name "HA" .
+
+fid:epi1601841 ns1:sameAs fid:mn436834 ;
+    f:epi_id "EPI1601841" ;
+    f:segment_name "HA" .
+
+fid:epi1601842 ns1:sameAs fid:mn436835 ;
+    f:epi_id "EPI1601842" ;
+    f:segment_name "NA" .
+
+fid:epi1601843 ns1:sameAs fid:mn436836 ;
+    f:epi_id "EPI1601843" ;
+    f:segment_name "PB2" .
+
+fid:epi1601844 ns1:sameAs fid:mn436837 ;
+    f:epi_id "EPI1601844" ;
+    f:segment_name "PB1" .
+
+fid:epi1601845 ns1:sameAs fid:mn436838 ;
+    f:epi_id "EPI1601845" ;
+    f:segment_name "PA" .
+
+fid:epi1601846 ns1:sameAs fid:mn436839 ;
+    f:epi_id "EPI1601846" ;
+    f:segment_name "HA" .
+
+fid:epi1601847 ns1:sameAs fid:mn436840 ;
+    f:epi_id "EPI1601847" ;
+    f:segment_name "NP" .
+
+fid:epi1601848 ns1:sameAs fid:mn436841 ;
+    f:epi_id "EPI1601848" ;
+    f:segment_name "NA" .
+
+fid:epi1601849 ns1:sameAs fid:mn436842 ;
+    f:epi_id "EPI1601849" ;
+    f:segment_name "M" .
+
+fid:epi1601850 ns1:sameAs fid:mn436843 ;
+    f:epi_id "EPI1601850" ;
+    f:segment_name "NS" .
+
+fid:epi1601851 ns1:sameAs fid:mn447202 ;
+    f:epi_id "EPI1601851" ;
+    f:segment_name "HA" .
+
+fid:epi1601852 ns1:sameAs fid:mn447203 ;
+    f:epi_id "EPI1601852" ;
+    f:segment_name "NA" .
+
+fid:mn436834 ns1:sameAs fid:epi1601841 ;
+    f:genbank_id "MN436834" ;
+    f:segment_name "HA" .
+
+fid:mn436835 ns1:sameAs fid:epi1601842 ;
+    f:genbank_id "MN436835" ;
+    f:segment_name "NA" .
+
+fid:mn436836 ns1:sameAs fid:epi1601843 ;
+    f:genbank_id "MN436836" ;
+    f:segment_name "PB2" .
+
+fid:mn436837 ns1:sameAs fid:epi1601844 ;
+    f:genbank_id "MN436837" ;
+    f:segment_name "PB1" .
+
+fid:mn436838 ns1:sameAs fid:epi1601845 ;
+    f:genbank_id "MN436838" ;
+    f:segment_name "PA" .
+
+fid:mn436839 ns1:sameAs fid:epi1601846 ;
+    f:genbank_id "MN436839" ;
+    f:segment_name "HA" .
+
+fid:mn436840 ns1:sameAs fid:epi1601847 ;
+    f:genbank_id "MN436840" ;
+    f:segment_name "NP" .
+
+fid:mn436841 ns1:sameAs fid:epi1601848 ;
+    f:genbank_id "MN436841" ;
+    f:segment_name "NA" .
+
+fid:mn436842 ns1:sameAs fid:epi1601849 ;
+    f:genbank_id "MN436842" ;
+    f:segment_name "M" .
+
+fid:mn436843 ns1:sameAs fid:epi1601850 ;
+    f:genbank_id "MN436843" ;
+    f:segment_name "NS" .
+
+fid:mn447202 ns1:sameAs fid:epi1601851 ;
+    f:genbank_id "MN447202" ;
+    f:segment_name "HA" .
+
+fid:mn447203 ns1:sameAs fid:epi1601852 ;
+    f:genbank_id "MN447203" ;
+    f:segment_name "NA" .
+
