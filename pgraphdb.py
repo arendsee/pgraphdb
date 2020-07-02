@@ -1,52 +1,74 @@
 #!/usr/bin/env python3
 
-"""
-control a graphdb database.
-
-Usage:
-  c79 list [--url=<url>] 
-  c79 make [<config_file>] [--url=<url>]
-  c79 delete_repository <repo_name> [--url=<url>]
-  c79 upload_data <repo_name> [--url=<url>] <turtle_files>...
-  c79 delete_data <repo_name> [--url=<url>] <turtle_files>...
-  c79 delete_pattern <repo_name> [--url=<url>] <sparql_file>
-  c79 list_files <repo_name> [--url=<url>]
-
-Options:
-  -h --help       Show this screen.
-  --url <url>     The graphdb base URL [default:"http://localhost:7200"]
-"""
-
-import os
-import sys
-import signal
-import requests
+import argparse
+import textwrap
 import json
-from docopt import docopt
+import sys
+import lib.operations as cmd
 
 
-def make_repo(config, url):
-    headers = {}
-    files = {"config": (config, open(config, "rb"))}
-    response = requests.post(f"{url}/rest/repositories", headers=headers, files=files)
-    return response
+class SubcommandHelpFormatter(argparse.RawDescriptionHelpFormatter):
+    """
+    Remove the redundant "<subcommand>" string from under the "subcommands:"
+    line in the help statement.
+
+    Adapted from Jeppe Ledet-Pedersen on StackOverflow.
+    """
+
+    def _format_action(self, action):
+        parts = super(argparse.RawDescriptionHelpFormatter, self)._format_action(action)
+        if action.nargs == argparse.PARSER:
+            parts = "\n".join(parts.split("\n")[1:])
+        return parts
 
 
-def list_repo(url):
-    headers = {"Accept": "application/json"}
-    response = requests.get(f"{url}/rest/repositories", headers=headers)
-    return response
+cli = argparse.ArgumentParser(
+    prog="pgraphdb",
+    formatter_class=SubcommandHelpFormatter,
+    description="Wrapper around the GraphDB REST interface",
+    epilog=textwrap.dedent("ladida back end stuff"),
+)
+subparsers = cli.add_subparsers(metavar="<subcommand>", title="subcommands")
+
+# subcommand decorator idea adapted from Mike Depalatis blog
+def subcommand(args=[], parent=subparsers):
+    def decorator(func):
+        if func.__doc__:
+            help_str = func.__doc__.strip().split("\n")[0]
+            desc_str = textwrap.dedent(func.__doc__)
+        else:
+            help_str = "DOCUMENT ME PLEASE!!!"
+            desc_str = None
+        cmd_name = args[0]
+        parser = parent.add_parser(
+            cmd_name,
+            description=desc_str,
+            help=help_str,
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            #  usage=f"pgraphdb {cmd_name} <options>"
+        )
+        for arg in args[1:]:
+            parser.add_argument(*arg[0], **arg[1])
+        parser.set_defaults(func=func)
+
+    return decorator
 
 
-def delete_repo(url, repo_name):
-    headers = {"Accept": "application/json"}
-    response = requests.delete(f"{url}/rest/repositories/{repo_name}", headers=headers)
-    return response
+def argument(*name_or_flags, **kwargs):
+    return (list(name_or_flags), kwargs)
+
+
+def handle_response(response):
+    if response.status_code >= 400:
+        print(f"ERROR: {response.status_code}: {response.text}", file=sys.stderr)
+        return None
+    else:
+        return response.text
 
 
 def turtle_to_deletion_sparql(turtle):
     """
-    Translates a turtle file into a SPARQL statement deleting the triples in the file 
+    Translates a turtle file into a SPARQL statement deleting the triples in the file
 
     extract prefix statements
     replace '@prefix' with 'prefix', case insenstive
@@ -71,100 +93,115 @@ def turtle_to_deletion_sparql(turtle):
     return sparql
 
 
-def delete_data(url, repo_name, turtle_files):
-    from SPARQLWrapper import SPARQLWrapper
+@subcommand(
+    [
+        "make",
+        argument("config_file"),
+        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+    ]
+)
+def call_make_repo(args):
+    """
+    Create a new data repository within a graphdb database
+    """
+    print(handle_response(cmd.make_repo(config=args.config_file, url=args.url)))
 
-    graphdb_url = f"{url}/repositories/{repo_name}/statements"
-    for turtle in turtle_files:
-        with open(turtle, "r") as f:
-            turtle_lines = f.readlines()
-            sparql_delete = turtle_to_deletion_sparql(turtle_lines)
-            sparql = SPARQLWrapper(graphdb_url)
-            sparql.method = "POST"
-            sparql.queryType = "DELETE"
-            sparql.setQuery(sparql_delete)
-            sparql.query()
+
+@subcommand(
+    ["ls_repo", argument("--url", help="GraphDB URL", default="http://localhost:7200")]
+)
+def call_ls_repo(args):
+    """
+    List all repositories in the GraphDB database
+    """
+    print(handle_response(cmd.ls_repo(url=args.url)))
 
 
-def upload_data(url, repo_name, turtle_files):
-    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+@subcommand(
+    [
+        "rm_repo",
+        argument("repo_name", help="Repository name"),
+        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+    ]
+)
+def call_rm_repo(args):
+    """
+    Delete a repository in the GraphDB database
+    """
+    print(handle_response(cmd.rm_repo(repo_name=args.repo_name, url=args.url)))
 
-    data = dict(
-        fileNames=turtle_files,
-        importSettings=dict(
-            parserSettings=dict(
-                # If True, filenames such as "cdc_cvv.ttl" will fail since '_' is an
-                # invalid character in a URI
-                verifyURISyntax=False
-            )
-        ),
+
+@subcommand(
+    [
+        "rm_data",
+        argument("repo_name", help="Repository name"),
+        argument("turtle_files", help="Turtle files", nargs="*"),
+        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+    ]
+)
+def call_rm_data(args):
+    """
+    Delete all triples listed in the given turtle files 
+    """
+    cmd.rm_data(url=url, repo_name=args.repo_name, turtle_files=args.turtle_files)
+
+
+@subcommand(
+    [
+        "rm_pattern",
+        argument("repo_name", help="Repository name"),
+        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+    ]
+)
+def call_rm_pattern(args):
+    """
+    Remove triples from store with sparql pattern
+    """
+    cmd.delete_pattern(
+        url=args.url, repo_name=args.repo_name, sparql_file=args.sparql_file
     )
 
-    rest_url = f"{url}/rest/data/import/server/{repo_name}"
-    response = requests.post(rest_url, headers=headers, data=json.dumps(data))
-    return response
+
+@subcommand(
+    [
+        "ls_files",
+        argument("repo_name", help="Repository name"),
+        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+    ]
+)
+def call_ls_files(args):
+    """
+    List data files stored on the GraphDB server
+    """
+    json_str = handle_response(cmd.list_files(url=args.url, repo_name=args.repo_name))
+    for entry in json.loads(json_str):
+        print(entry["name"])
 
 
-def list_files(url, repo_name):
-    rest_url = f"{url}/rest/data/import/server/{repo_name}"
-    response = requests.get(rest_url)
-    return response
-
-
-def delete_pattern(url, repo_name, sparql_file):
-    raise NotImplemented
-
-
-def handle_response(response):
-    if response.status_code >= 400:
-        print(f"ERROR: {response.status_code}: {response.text}", file=sys.stderr)
-        return None
-    else:
-        return response.text
+@subcommand(
+    [
+        "load",
+        argument("repo_name", help="Repository name"),
+        argument("turtle_files", help="Turtle files", nargs="*"),
+        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+    ]
+)
+def call_load_data(args):
+    """
+    load a given turtle file
+    """
+    print(
+        handle_response(
+            cmd.load_data(
+                url=args.url, repo_name=args.repo_name, turtle_files=args.turtle_files
+            )
+        )
+    )
 
 
 if __name__ == "__main__":
-    if os.name is "posix":
-        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
-
-    args = docopt(__doc__, version="c79 0.1.0")
-
-    if args["--url"]:
-        url = args["--url"]
+    args = cli.parse_args()
+    if len(vars(args)) == 0:
+        cli.print_help()
     else:
-        url = "http://localhost:7200"
-
-    if args["list"]:
-        print(handle_response(list_repo(url=url)))
-
-    if args["make"]:
-        print(handle_response(make_repo(args["<config_file>"], url=url)))
-
-    if args["delete_repository"]:
-        print(handle_response(delete_repo(repo_name=args["<repo_name>"], url=url)))
-
-    if args["delete_data"]:
-        delete_data(
-            url=url, repo_name=args["<repo_name>"], turtle_files=args["<turtle_files>"]
-        )
-
-    if args["upload_data"]:
-        print(
-            handle_response(
-                upload_data(
-                    url=url,
-                    repo_name=args["<repo_name>"],
-                    turtle_files=args["<turtle_files>"],
-                )
-            )
-        )
-
-    if args["list_files"]:
-        json_str = handle_response(list_files(url=url, repo_name=args["<repo_name>"]))
-        for entry in json.loads(json_str):
-            print(entry["name"])
-
-    if args["delete_pattern"]:
-        delete_pattern(
-            url=url, repo_name=args["<repo_name>"], sparql_file=args["<sparql_file>"]
-        )
+        args.func(args)
