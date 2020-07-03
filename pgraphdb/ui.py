@@ -4,7 +4,7 @@ import argparse
 import textwrap
 import json
 import sys
-import lib.operations as cmd
+import pgraphdb.commands as cmd
 
 
 class SubcommandHelpFormatter(argparse.RawDescriptionHelpFormatter):
@@ -199,9 +199,13 @@ def call_load_data(args):
     )
 
 
-if __name__ == "__main__":
+def main():
     args = cli.parse_args()
     if len(vars(args)) == 0:
         cli.print_help()
     else:
         args.func(args)
+
+
+if __name__ == "__main__":
+    main()

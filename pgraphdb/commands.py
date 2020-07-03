@@ -1,6 +1,7 @@
 import requests
 from SPARQLWrapper import SPARQLWrapper
 
+
 def make_repo(config, url):
     headers = {}
     files = {"config": (config, open(config, "rb"))}
