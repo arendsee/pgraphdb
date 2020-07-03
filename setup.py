@@ -20,6 +20,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    install_requires=[ "SPARQLWrapper" ]
     entry_points={"console_scripts": ["pgraphdb=pgraphdb.ui:main"]},
     py_modules=["pgraphdb"],
     zip_safe=False,
