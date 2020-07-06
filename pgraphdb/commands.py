@@ -1,5 +1,5 @@
 import requests
-from SPARQLWrapper import SPARQLWrapper
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 
 def make_repo(config, url):
@@ -61,3 +61,13 @@ def list_files(url, repo_name):
 
 def rm_pattern(url, repo_name, sparql_file):
     raise NotImplemented
+
+def sparql_query(url, repo_name, sparql_file):
+    sparql = SPARQLWrapper(f"{url}/repositories/{repo_name}")
+
+    with open(sparql_file, "r") as fh:
+        sparql_str = fh.read()
+        sparql.setQuery(sparql_str)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
+        return results

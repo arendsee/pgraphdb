@@ -199,6 +199,35 @@ def call_load_data(args):
     )
 
 
+
+@subcommand(
+    [
+        "query",
+        argument("repo_name", help="Repository name"),
+        argument("sparql_file", help="The SPARQL query file"),
+        argument("--header", action="store_true", default=False, help="Print the header of column names"),
+        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+    ]
+)
+def call_sparql_query(args):
+    """
+    Submit a SPARQL query
+    """
+
+    def val(xs, field):
+      if field in xs:
+        return xs[field]["value"]
+      else:
+        return ""
+
+    results = cmd.sparql_query(url=args.url, repo_name=args.repo_name, sparql_file=args.sparql_file)
+    if args.header:
+        print("\t".join(results["head"]["vars"]))
+    for row in results["results"]["bindings"]:
+        fields = (val(row, field) for field in results["head"]["vars"])
+        print("\t".join(fields))
+
+
 def main():
     args = cli.parse_args()
     if len(vars(args)) == 0:
