@@ -1,0 +1,7 @@
+ - [ ] allow default url to be specified in config file
+ - [x] add GraphDB daemon start command
+ - [ ] allow uploading of turtles not in the server folder
+ - [x] allow sparql queries
+ - [ ] add intersection command to find triplets that are both in a turtle file
+       and in the database (select with OPTION wrapping each triplet)
+ - [ ] allow namespaces to be specified in the config

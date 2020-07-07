@@ -95,6 +95,19 @@ def turtle_to_deletion_sparql(turtle):
 
 @subcommand(
     [
+        "start",
+        argument("config_file"),
+        argument("--path", help="The path to the GraphDB bin directory"),
+    ]
+)
+def call_start_graphdb(args):
+    """
+    Start a GraphDB daemon in server mode
+    """
+    start_graphdb(path=args.path)
+
+@subcommand(
+    [
         "make",
         argument("config_file"),
         argument("--url", help="GraphDB URL", default="http://localhost:7200"),

@@ -1,4 +1,5 @@
 import requests
+import subprocess
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
@@ -71,3 +72,14 @@ def sparql_query(url, repo_name, sparql_file):
         sparql.setReturnFormat(JSON)
         results = sparql.query().convert()
         return results
+
+def start_graphdb(path=None):
+    cmd = "graphdb"
+    if path:
+      cmd = os.path.join(path, "graphdb")
+    try:
+      subprocess.run(f"{cmd} -sd")
+    except FileNotFoundError:
+      msg = f"Could not find executable `{cmd}`, please place it in PATH"
+      print(msg, sys.stderr())
+      sys.exit(1)
