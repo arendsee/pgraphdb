@@ -1,6 +1,7 @@
 import requests
 import subprocess
 import sys
+import json
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
