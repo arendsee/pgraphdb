@@ -1,5 +1,6 @@
 import requests
 import subprocess
+import sys
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
@@ -65,14 +66,19 @@ def rm_pattern(url, repo_name, sparql_file):
 
 
 def sparql_query(url, repo_name, sparql_file):
-    sparql = SPARQLWrapper(f"{url}/repositories/{repo_name}")
+    graphdb_url = f"{url}/repositories/{repo_name}"
+    sparql = SPARQLWrapper(graphdb_url)
 
     with open(sparql_file, "r") as fh:
         sparql_str = fh.read()
         sparql.setQuery(sparql_str)
         sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-        return results
+        try:
+            results = sparql.query().convert()
+        except:
+            print(f"Could not reach db url: '{graphdb_url}'", file=sys.stderr)
+            sys.exit(1)
+    return results
 
 
 def start_graphdb(path=None):
