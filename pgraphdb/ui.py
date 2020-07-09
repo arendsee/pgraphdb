@@ -162,16 +162,17 @@ def call_rm_data(args):
 
 @subcommand(
     [
-        "rm_pattern",
+        "update",
         argument("repo_name", help="Repository name"),
+        argument("sparql_file", help="SPARQL file with DELETE or INSERT statement"),
         argument("--url", help="GraphDB URL", default="http://localhost:7200"),
     ]
 )
-def call_rm_pattern(args):
+def call_update(args):
     """
-    Remove triples from store with sparql pattern
+    Update database through delete or insert SPARQL query 
     """
-    cmd.delete_pattern(
+    cmd.update(
         url=args.url, repo_name=args.repo_name, sparql_file=args.sparql_file
     )
 

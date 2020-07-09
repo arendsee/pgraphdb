@@ -36,6 +36,40 @@ def rm_data(url, repo_name, turtle_files):
             sparql.setQuery(sparql_delete)
             sparql.query()
 
+def update(url, repo_name, sparql_file):
+    graphdb_url = f"{url}/repositories/{repo_name}/statements"
+    sparql = SPARQLWrapper(graphdb_url)
+    with open(sparql_file, "r") as fh:
+        sparql_str = fh.read()
+        sparql.setQuery(sparql_str)
+        sparql.setReturnFormat(JSON)
+        sparql.method = "POST"
+        try:
+            results = sparql.query().convert()
+        except:
+            print(f"Could not reach db url: '{graphdb_url}'", file=sys.stderr)
+            sys.exit(1)
+    return results
+
+
+def sparql_query(url, repo_name, sparql_file):
+    graphdb_url = f"{url}/repositories/{repo_name}"
+    sparql = SPARQLWrapper(graphdb_url)
+
+    with open(sparql_file, "r") as fh:
+        sparql_str = fh.read()
+        sparql.setQuery(sparql_str)
+        sparql.setReturnFormat(JSON)
+        try:
+            results = sparql.query().convert()
+        except:
+            print(f"Could not reach db url: '{graphdb_url}'", file=sys.stderr)
+            sys.exit(1)
+    return results
+
+
+
+
 
 def load_data(url, repo_name, turtle_files):
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
@@ -60,26 +94,6 @@ def list_files(url, repo_name):
     rest_url = f"{url}/rest/data/import/server/{repo_name}"
     response = requests.get(rest_url)
     return response
-
-
-def rm_pattern(url, repo_name, sparql_file):
-    raise NotImplemented
-
-
-def sparql_query(url, repo_name, sparql_file):
-    graphdb_url = f"{url}/repositories/{repo_name}"
-    sparql = SPARQLWrapper(graphdb_url)
-
-    with open(sparql_file, "r") as fh:
-        sparql_str = fh.read()
-        sparql.setQuery(sparql_str)
-        sparql.setReturnFormat(JSON)
-        try:
-            results = sparql.query().convert()
-        except:
-            print(f"Could not reach db url: '{graphdb_url}'", file=sys.stderr)
-            sys.exit(1)
-    return results
 
 
 def start_graphdb(path=None):
