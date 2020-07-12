@@ -5,58 +5,17 @@ import textwrap
 import json
 import sys
 import pgraphdb as cmd
+import pgraphdb.util.cli as cli
 
 
-class SubcommandHelpFormatter(argparse.RawDescriptionHelpFormatter):
-    """
-    Remove the redundant "<subcommand>" string from under the "subcommands:"
-    line in the help statement.
-
-    Adapted from Jeppe Ledet-Pedersen on StackOverflow.
-    """
-
-    def _format_action(self, action):
-        parts = super(argparse.RawDescriptionHelpFormatter, self)._format_action(action)
-        if action.nargs == argparse.PARSER:
-            parts = "\n".join(parts.split("\n")[1:])
-        return parts
-
-
-cli = argparse.ArgumentParser(
+parser = argparse.ArgumentParser(
     prog="pgraphdb",
-    formatter_class=SubcommandHelpFormatter,
+    formatter_class=cli.SubcommandHelpFormatter,
     description="Wrapper around the GraphDB REST interface",
     epilog=textwrap.dedent("ladida back end stuff"),
 )
-subparsers = cli.add_subparsers(metavar="<subcommand>", title="subcommands")
-
-# subcommand decorator idea adapted from Mike Depalatis blog
-def subcommand(args=[], parent=subparsers):
-    def decorator(func):
-        if func.__doc__:
-            help_str = func.__doc__.strip().split("\n")[0]
-            desc_str = textwrap.dedent(func.__doc__)
-        else:
-            help_str = "DOCUMENT ME PLEASE!!!"
-            desc_str = None
-        cmd_name = args[0]
-        parser = parent.add_parser(
-            cmd_name,
-            description=desc_str,
-            help=help_str,
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            #  usage=f"pgraphdb {cmd_name} <options>"
-        )
-        for arg in args[1:]:
-            parser.add_argument(*arg[0], **arg[1])
-        parser.set_defaults(func=func)
-
-    return decorator
-
-
-def argument(*name_or_flags, **kwargs):
-    return (list(name_or_flags), kwargs)
-
+subparsers = parser.add_subparsers(metavar="<subcommand>", title="subcommands")
+subcommand = cli.subcommand_maker(subparsers)
 
 def handle_response(response):
     if response.status_code >= 400:
@@ -96,8 +55,8 @@ def turtle_to_deletion_sparql(turtle):
 @subcommand(
     [
         "start",
-        argument("config_file"),
-        argument("--path", help="The path to the GraphDB bin directory"),
+        cli.argument("config_file"),
+        cli.argument("--path", help="The path to the GraphDB bin directory"),
     ]
 )
 def call_start_graphdb(args):
@@ -110,8 +69,8 @@ def call_start_graphdb(args):
 @subcommand(
     [
         "make",
-        argument("config_file"),
-        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+        cli.argument("config_file"),
+        cli.argument("--url", help="GraphDB URL", default="http://localhost:7200"),
     ]
 )
 def call_make_repo(args):
@@ -122,7 +81,7 @@ def call_make_repo(args):
 
 
 @subcommand(
-    ["ls_repo", argument("--url", help="GraphDB URL", default="http://localhost:7200")]
+    ["ls_repo", cli.argument("--url", help="GraphDB URL", default="http://localhost:7200")]
 )
 def call_ls_repo(args):
     """
@@ -134,8 +93,8 @@ def call_ls_repo(args):
 @subcommand(
     [
         "rm_repo",
-        argument("repo_name", help="Repository name"),
-        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+        cli.argument("repo_name", help="Repository name"),
+        cli.argument("--url", help="GraphDB URL", default="http://localhost:7200"),
     ]
 )
 def call_rm_repo(args):
@@ -148,9 +107,9 @@ def call_rm_repo(args):
 @subcommand(
     [
         "rm_data",
-        argument("repo_name", help="Repository name"),
-        argument("turtle_files", help="Turtle files", nargs="*"),
-        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+        cli.argument("repo_name", help="Repository name"),
+        cli.argument("turtle_files", help="Turtle files", nargs="*"),
+        cli.argument("--url", help="GraphDB URL", default="http://localhost:7200"),
     ]
 )
 def call_rm_data(args):
@@ -163,9 +122,9 @@ def call_rm_data(args):
 @subcommand(
     [
         "update",
-        argument("repo_name", help="Repository name"),
-        argument("sparql_file", help="SPARQL file with DELETE or INSERT statement"),
-        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+        cli.argument("repo_name", help="Repository name"),
+        cli.argument("sparql_file", help="SPARQL file with DELETE or INSERT statement"),
+        cli.argument("--url", help="GraphDB URL", default="http://localhost:7200"),
     ]
 )
 def call_update(args):
@@ -180,8 +139,8 @@ def call_update(args):
 @subcommand(
     [
         "ls_files",
-        argument("repo_name", help="Repository name"),
-        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+        cli.argument("repo_name", help="Repository name"),
+        cli.argument("--url", help="GraphDB URL", default="http://localhost:7200"),
     ]
 )
 def call_ls_files(args):
@@ -196,9 +155,9 @@ def call_ls_files(args):
 @subcommand(
     [
         "load",
-        argument("repo_name", help="Repository name"),
-        argument("turtle_files", help="Turtle files", nargs="*"),
-        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+        cli.argument("repo_name", help="Repository name"),
+        cli.argument("turtle_files", help="Turtle files", nargs="*"),
+        cli.argument("--url", help="GraphDB URL", default="http://localhost:7200"),
     ]
 )
 def call_load_data(args):
@@ -217,15 +176,15 @@ def call_load_data(args):
 @subcommand(
     [
         "query",
-        argument("repo_name", help="Repository name"),
-        argument("sparql_file", help="The SPARQL query file"),
-        argument(
+        cli.argument("repo_name", help="Repository name"),
+        cli.argument("sparql_file", help="The SPARQL query file"),
+        cli.argument(
             "--header",
             action="store_true",
             default=False,
             help="Print the header of column names",
         ),
-        argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+        cli.argument("--url", help="GraphDB URL", default="http://localhost:7200"),
     ]
 )
 def call_sparql_query(args):
@@ -250,9 +209,9 @@ def call_sparql_query(args):
 
 
 def main():
-    args = cli.parse_args()
+    args = parser.parse_args()
     if len(vars(args)) == 0:
-        cli.print_help()
+        parser.print_help()
     else:
         args.func(args)
 
