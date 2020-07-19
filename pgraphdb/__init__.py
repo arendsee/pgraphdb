@@ -44,11 +44,7 @@ def update(url, repo_name, sparql_file):
         sparql.setQuery(sparql_str)
         sparql.setReturnFormat(JSON)
         sparql.method = "POST"
-        try:
-            results = sparql.query().convert()
-        except:
-            print(f"Could not reach db url: '{graphdb_url}'", file=sys.stderr)
-            sys.exit(1)
+        results = sparql.query().convert()
     return results
 
 
@@ -60,11 +56,7 @@ def sparql_query(url, repo_name, sparql_file):
         sparql_str = fh.read()
         sparql.setQuery(sparql_str)
         sparql.setReturnFormat(JSON)
-        try:
-            results = sparql.query().convert()
-        except:
-            print(f"Could not reach db url: '{graphdb_url}'", file=sys.stderr)
-            sys.exit(1)
+        results = sparql.query().convert()
     return results
 
 
