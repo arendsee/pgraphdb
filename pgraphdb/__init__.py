@@ -24,6 +24,32 @@ def rm_repo(url, repo_name):
     return response
 
 
+def turtle_to_deletion_sparql(turtle):
+    """
+    Translates a turtle file into a SPARQL statement deleting the triples in the file
+
+    extract prefix statements
+    replace '@prefix' with 'prefix', case insenstive
+    """
+
+    prefixes = []
+    body = []
+
+    for line in turtle:
+        line = line.strip()
+        if len(line) > 0 and line[0] == "@":
+            # translates '@prefix f: <whatever> .' to 'prefix f: <whatever>'
+            prefixes.append(line[1:-1])
+        else:
+            body.append(line)
+
+    prefix_str = "\n".join(prefixes)
+    body_str = "\n".join(body)
+
+    sparql = f"{prefix_str}\nDELETE DATA {{\n{body_str}\n}}"
+
+    return sparql
+
 def rm_data(url, repo_name, turtle_files):
     graphdb_url = f"{url}/repositories/{repo_name}/statements"
     for turtle in turtle_files:

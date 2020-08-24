@@ -1,3 +1,6 @@
+import argparse
+import textwrap
+
 class SubcommandHelpFormatter(argparse.RawDescriptionHelpFormatter):
     """
     Remove the redundant "<subcommand>" string from under the "subcommands:"

@@ -5,7 +5,7 @@ import textwrap
 import json
 import sys
 import pgraphdb as cmd
-import pgraphdb.util.cli as cli
+import pgraphdb.cli as cli
 
 
 parser = argparse.ArgumentParser(
@@ -23,33 +23,6 @@ def handle_response(response):
         return None
     else:
         return response.text
-
-
-def turtle_to_deletion_sparql(turtle):
-    """
-    Translates a turtle file into a SPARQL statement deleting the triples in the file
-
-    extract prefix statements
-    replace '@prefix' with 'prefix', case insenstive
-    """
-
-    prefixes = []
-    body = []
-
-    for line in turtle:
-        line = line.strip()
-        if len(line) > 0 and line[0] == "@":
-            # translates '@prefix f: <whatever> .' to 'prefix f: <whatever>'
-            prefixes.append(line[1:-1])
-        else:
-            body.append(line)
-
-    prefix_str = "\n".join(prefixes)
-    body_str = "\n".join(body)
-
-    sparql = f"{prefix_str}\nDELETE DATA {{\n{body_str}\n}}"
-
-    return sparql
 
 
 @subcommand(

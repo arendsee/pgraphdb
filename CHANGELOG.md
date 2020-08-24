@@ -1,3 +1,13 @@
+v0.1.1
+======
+
+ * More bug fixes in UI
+
+v0.1.0
+======
+
+ * Fix bug in `rm_data`
+
 v0.0.2
 ======
 
