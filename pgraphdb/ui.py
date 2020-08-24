@@ -116,7 +116,7 @@ def call_rm_data(args):
     """
     Delete all triples listed in the given turtle files 
     """
-    cmd.rm_data(url=url, repo_name=args.repo_name, turtle_files=args.turtle_files)
+    cmd.rm_data(url=args.url, repo_name=args.repo_name, turtle_files=args.turtle_files)
 
 
 @subcommand(
