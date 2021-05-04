@@ -1,3 +1,8 @@
+v0.2.0
+======
+
+ * Add CONSTRUCT handling 
+
 v0.1.1
 ======
 

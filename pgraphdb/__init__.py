@@ -2,7 +2,7 @@ import requests
 import subprocess
 import sys
 import json
-from SPARQLWrapper import SPARQLWrapper, JSON
+from SPARQLWrapper import SPARQLWrapper, JSON, TURTLE
 
 
 def make_repo(config, url):
@@ -86,6 +86,16 @@ def sparql_query(url, repo_name, sparql_file):
     return results
 
 
+def sparql_construct(url, repo_name, sparql_file):
+    graphdb_url = f"{url}/repositories/{repo_name}"
+    sparql = SPARQLWrapper(graphdb_url)
+
+    with open(sparql_file, "r") as fh:
+        sparql_str = fh.read()
+        sparql.setQuery(sparql_str)
+        sparql.setReturnFormat(TURTLE)
+        results = sparql.query().convert().decode("utf-8")
+    return results
 
 
 

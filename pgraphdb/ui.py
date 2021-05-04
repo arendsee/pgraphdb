@@ -181,6 +181,21 @@ def call_sparql_query(args):
         print("\t".join(fields))
 
 
+@subcommand(
+    [
+        "construct",
+        cli.argument("repo_name", help="Repository name"),
+        cli.argument("sparql_file", help="The SPARQL query file"),
+        cli.argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+    ]
+)
+def call_sparql_construct(args):
+    """
+    Submit a SPARQL CONSTRUCT query and return a Turtle formatted response 
+    """
+    return cmd.sparql_construct(url=args.url, repo_name=args.repo_name, sparql_file=args.sparql_file)
+
+
 def main():
     args = parser.parse_args()
     if len(vars(args)) == 0:
