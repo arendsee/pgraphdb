@@ -2,6 +2,7 @@ import requests
 import subprocess
 import sys
 import json
+import os
 from SPARQLWrapper import SPARQLWrapper, JSON, TURTLE
 
 
