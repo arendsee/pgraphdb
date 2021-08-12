@@ -130,7 +130,7 @@ def start_graphdb(path=None):
     if path:
         cmd = os.path.join(path, "graphdb")
     try:
-        subprocess.run(f"{cmd} -sd")
+        subprocess.run(cmd, "-sd")
     except FileNotFoundError:
         msg = f"Could not find executable `{cmd}`, please place it in PATH"
         print(msg, sys.stderr())
