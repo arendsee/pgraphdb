@@ -1,3 +1,8 @@
+v0.3.0
+======
+
+ * Fix bugs in database initialization
+
 v0.2.0
 ======
 
