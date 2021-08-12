@@ -36,7 +36,7 @@ def call_start_graphdb(args):
     """
     Start a GraphDB daemon in server mode
     """
-    start_graphdb(path=args.path)
+    cmd.start_graphdb(path=args.path)
 
 
 @subcommand(
