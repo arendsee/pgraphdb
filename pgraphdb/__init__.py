@@ -106,8 +106,8 @@ def load_data(url, repo_name, turtle_file):
     """
     data = open(turtle_file, 'rb')
     headers = {"Content-Type": "text/turtle"}
-    rest_url = f"{url}/repositories/{repo_name}/statements"
-    response = requests.put(rest_url, headers=headers, data=data)
+    rest_url = f"{url}/repositories/{repo_name}/rdf-graphs/service?default"
+    response = requests.post(rest_url, headers=headers, data=data)
     return response
 
 def list_files(url, repo_name):
