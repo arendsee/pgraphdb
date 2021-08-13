@@ -100,24 +100,15 @@ def sparql_construct(url, repo_name, sparql_file):
 
 
 
-def load_data(url, repo_name, turtle_files):
-    headers = {"Content-Type": "application/json", "Accept": "application/json"}
-
-    data = dict(
-        fileNames=turtle_files,
-        importSettings=dict(
-            parserSettings=dict(
-                # If True, filenames such as "cdc_cvv.ttl" will fail since '_' is an
-                # invalid character in a URI
-                verifyURISyntax=False
-            )
-        ),
-    )
-
-    rest_url = f"{url}/rest/data/import/server/{repo_name}"
-    response = requests.post(rest_url, headers=headers, data=json.dumps(data))
+def load_data(url, repo_name, turtle_file):
+    """
+    Upload a single turtle file
+    """
+    data = open(turtle_file, 'rb')
+    headers = {"Content-Type": "text/turtle"}
+    rest_url = f"{url}/repositories/{repo_name}/statements"
+    response = requests.put(rest_url, headers=headers, data=data)
     return response
-
 
 def list_files(url, repo_name):
     rest_url = f"{url}/rest/data/import/server/{repo_name}"
