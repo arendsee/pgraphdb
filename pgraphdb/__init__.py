@@ -9,19 +9,19 @@ from SPARQLWrapper import SPARQLWrapper, JSON, TURTLE
 def make_repo(config, url):
     headers = {}
     files = {"config": (config, open(config, "rb"))}
-    response = requests.post(f"{url}/rest/repositories", headers=headers, files=files)
+    response = requests.post(f"{url}/repositories", headers=headers, files=files)
     return response
 
 
 def ls_repo(url):
     headers = {"Accept": "application/json"}
-    response = requests.get(f"{url}/rest/repositories", headers=headers)
+    response = requests.get(f"{url}/repositories", headers=headers)
     return response
 
 
 def rm_repo(url, repo_name):
     headers = {"Accept": "application/json"}
-    response = requests.delete(f"{url}/rest/repositories/{repo_name}", headers=headers)
+    response = requests.delete(f"{url}/repositories/{repo_name}", headers=headers)
     return response
 
 
@@ -51,6 +51,7 @@ def turtle_to_deletion_sparql(turtle):
 
     return sparql
 
+
 def rm_data(url, repo_name, turtle_files):
     graphdb_url = f"{url}/repositories/{repo_name}/statements"
     for turtle in turtle_files:
@@ -62,6 +63,7 @@ def rm_data(url, repo_name, turtle_files):
             sparql.queryType = "DELETE"
             sparql.setQuery(sparql_delete)
             sparql.query()
+
 
 def update(url, repo_name, sparql_file):
     graphdb_url = f"{url}/repositories/{repo_name}/statements"
@@ -99,16 +101,16 @@ def sparql_construct(url, repo_name, sparql_file):
     return results
 
 
-
 def load_data(url, repo_name, turtle_file):
     """
     Upload a single turtle file
     """
-    data = open(turtle_file, 'rb')
+    data = open(turtle_file, "rb")
     headers = {"Content-Type": "text/turtle"}
     rest_url = f"{url}/repositories/{repo_name}/rdf-graphs/service?default"
     response = requests.post(rest_url, headers=headers, data=data)
     return response
+
 
 def list_files(url, repo_name):
     rest_url = f"{url}/rest/data/import/server/{repo_name}"

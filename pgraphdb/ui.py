@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser(
 subparsers = parser.add_subparsers(metavar="<subcommand>", title="subcommands")
 subcommand = cli.subcommand_maker(subparsers)
 
+
 def handle_response(response):
     if response.status_code >= 400:
         print(f"ERROR: {response.status_code}: {response.text}", file=sys.stderr)
@@ -54,7 +55,10 @@ def call_make_repo(args):
 
 
 @subcommand(
-    ["ls_repo", cli.argument("--url", help="GraphDB URL", default="http://localhost:7200")]
+    [
+        "ls_repo",
+        cli.argument("--url", help="GraphDB URL", default="http://localhost:7200"),
+    ]
 )
 def call_ls_repo(args):
     """
@@ -87,7 +91,7 @@ def call_rm_repo(args):
 )
 def call_rm_data(args):
     """
-    Delete all triples listed in the given turtle files 
+    Delete all triples listed in the given turtle files
     """
     cmd.rm_data(url=args.url, repo_name=args.repo_name, turtle_files=args.turtle_files)
 
@@ -102,11 +106,9 @@ def call_rm_data(args):
 )
 def call_update(args):
     """
-    Update database through delete or insert SPARQL query 
+    Update database through delete or insert SPARQL query
     """
-    cmd.update(
-        url=args.url, repo_name=args.repo_name, sparql_file=args.sparql_file
-    )
+    cmd.update(url=args.url, repo_name=args.repo_name, sparql_file=args.sparql_file)
 
 
 @subcommand(
@@ -191,9 +193,11 @@ def call_sparql_query(args):
 )
 def call_sparql_construct(args):
     """
-    Submit a SPARQL CONSTRUCT query and return a Turtle formatted response 
+    Submit a SPARQL CONSTRUCT query and return a Turtle formatted response
     """
-    return cmd.sparql_construct(url=args.url, repo_name=args.repo_name, sparql_file=args.sparql_file)
+    return cmd.sparql_construct(
+        url=args.url, repo_name=args.repo_name, sparql_file=args.sparql_file
+    )
 
 
 def main():
