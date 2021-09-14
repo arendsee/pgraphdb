@@ -139,13 +139,14 @@ def call_load_data(args):
     """
     load a given turtle file
     """
-    print(
-        handle_response(
-            cmd.load_data(
-                url=args.url, repo_name=args.repo_name, turtle_files=args.turtle_files
-            )
-        )
-    )
+    for turtle_file in args.turtle_files:
+      print(
+          handle_response(
+              cmd.load_data(
+                  url=args.url, repo_name=args.repo_name, turtle_file=turtle_file
+              )
+          )
+      )
 
 
 @subcommand(
