@@ -1,3 +1,8 @@
+v0.3.1
+======
+
+ * Fix the very last bug (really, there aren't any more)
+
 v0.3.0
 ======
 
