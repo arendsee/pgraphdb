@@ -105,10 +105,10 @@ def load_data(url, repo_name, turtle_file):
     """
     Upload a single turtle file
     """
-    data = open(turtle_file, "rb")
-    headers = {"Content-Type": "text/turtle"}
-    rest_url = f"{url}/repositories/{repo_name}/rdf-graphs/service?default"
-    response = requests.post(rest_url, headers=headers, data=data)
+    with open(turtle_file, "rb") as data:
+      headers = {"Content-Type": "text/turtle"}
+      rest_url = f"{url}/repositories/{repo_name}/rdf-graphs/service?default"
+      response = requests.post(rest_url, headers=headers, data=data)
     return response
 
 
