@@ -9,7 +9,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON, TURTLE
 def make_repo(config, url):
     headers = {}
     files = {"config": (config, open(config, "rb"))}
-    response = requests.post(f"{url}/repositories", headers=headers, files=files)
+    response = requests.post(f"{url}/rest/repositories", headers=headers, files=files)
     return response
 
 
