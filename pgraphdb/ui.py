@@ -12,7 +12,6 @@ parser = argparse.ArgumentParser(
     prog="pgraphdb",
     formatter_class=cli.SubcommandHelpFormatter,
     description="Wrapper around the GraphDB REST interface",
-    epilog=textwrap.dedent("ladida back end stuff"),
 )
 subparsers = parser.add_subparsers(metavar="<subcommand>", title="subcommands")
 subcommand = cli.subcommand_maker(subparsers)
