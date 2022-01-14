@@ -15,6 +15,7 @@ setup(
     author="Zebulun Arendsee",
     author_email="zbwrnz@gmail.com",
     packages=["pgraphdb"],
+    package_data={"pgraphdb": ["py.typed"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
