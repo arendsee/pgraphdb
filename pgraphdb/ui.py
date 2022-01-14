@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+from typing import TextIO, List, Optional, BinaryIO
+from mypy_extensions import NoReturn
+
 import click
 import textwrap
 import json
 import sys
 import collections
 import pgraphdb as cmd
-import pgraphdb.cli as cli
 from pgraphdb.version import __version__
+from pgraphdb.util import handle_response
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -22,107 +26,106 @@ url_opt = click.option(
     default="http://localhost:7200",
 )
 
-config_file_arg = click.argument("config_file", type=click.Path(exists=True))
+config_file_arg = click.argument("config_file", type=str)
 
 turtle_files_arg = click.argument(
     "turtle_files", type=click.Path(exists=True), nargs=-1
 )
 
 
-def handle_response(response):
-    if response.status_code >= 400:
-        print(f"ERROR: {response.status_code}: {response.text}", file=sys.stderr)
-        return None
-    else:
-        return response.text
-
-
 @click.command(name="start")
 @click.option("--path", help="The path to the GraphDB bin directory")
-def start_cmd(path):
+def start_cmd(path : Optional[str]) -> NoReturn:
     """
     Start a GraphDB daemon in server mode
     """
-    cmd.start_graphdb(path=path)
+    handle_response(cmd.start_graphdb(path=path))
+    sys.exit(0)
 
 
 @click.command(name="make")
 @config_file_arg
 @url_opt
-def make_cmd(config_file, url):
+def make_cmd(config_file : str, url : str) -> NoReturn:
     """
     Create a new data repository within a graphdb database
     """
-    print(handle_response(cmd.make_repo(config=config_file, url=url)))
+    handle_response(cmd.make_repo(config=config_file, url=url))
+    sys.exit(0)
 
 
 @click.command(name="ls_repo")
 @url_opt
-def ls_repo_cmd(url):
+def ls_repo_cmd(url : str) -> NoReturn:
     """
     List all repositories in the GraphDB database
     """
-    print(handle_response(cmd.ls_repo(url=url)))
+    handle_response(cmd.ls_repo(url=url))
+    sys.exit(0)
 
 
 @click.command(name="rm_repo")
 @repo_name_arg
 @url_opt
-def rm_repo_cmd(repo_name, url):
+def rm_repo_cmd(repo_name : str, url : str) -> NoReturn:
     """
     Delete a repository in the GraphDB database
     """
-    print(handle_response(cmd.rm_repo(repo_name=repo_name, url=url)))
+    handle_response(cmd.rm_repo(repo_name=repo_name, url=url))
+    sys.exit(0)
 
 
 @click.command(name="rm_data")
 @repo_name_arg
 @turtle_files_arg
 @url_opt
-def rm_data_cmd(repo_name, turtle_files, url):
+def rm_data_cmd(repo_name : str, turtle_files : List[TextIO], url : str) -> NoReturn:
     """
     Delete all triples listed in the given turtle files
     """
-    cmd.rm_data(url=url, repo_name=repo_name, turtle_files=turtle_files)
+    for turtle_file in turtle_files:
+        cmd.rm_data(url=url, repo_name=repo_name, turtle_file=turtle_file)
+    sys.exit(0)
 
 
 @click.command(name="update")
 @repo_name_arg
 @sparql_file_arg
 @url_opt
-def update_cmd(repo_name, sparql_file, url):
+def update_cmd(repo_name : str, sparql_file : TextIO, url : str) -> NoReturn:
     """
     Update database through delete or insert SPARQL query
     """
-    cmd.update(url=url, repo_name=repo_name, sparql_file=sparql_file)
+
+    sparql_result = cmd.update(url=url, repo_name=repo_name, sparql_file=sparql_file)
+
+    sys.exit(0)
 
 
 @click.command(name="ls_files")
 @repo_name_arg
 @url_opt
-def ls_files_cmd(repo_name, url):
+def ls_files_cmd(repo_name : str, url : str) -> NoReturn:
     """
     List data files stored on the GraphDB server
     """
-    json_str = handle_response(cmd.list_files(url=url, repo_name=repo_name))
-    for entry in json.loads(json_str):
-        print(entry["name"])
+    files = cmd.list_files(url=url, repo_name=repo_name)
+    for filename in files:
+        print(filename)
+    sys.exit(0)
 
 
 @click.command(name="load")
 @repo_name_arg
 @turtle_files_arg
 @url_opt
-def load_cmd(repo_name, turtle_files, url):
+def load_cmd(repo_name : str, turtle_files : List[BinaryIO], url : str) -> NoReturn:
     """
     load a given turtle file
     """
     for turtle_file in turtle_files:
-        print(
-            handle_response(
-                cmd.load_data(url=url, repo_name=repo_name, turtle_file=turtle_file)
-            )
-        )
+        cmd.load_data(url=url, repo_name=repo_name, turtle_file=turtle_file)
+    sys.exit(0)
 
 
 @click.command(name="query")
@@ -132,7 +135,7 @@ def load_cmd(repo_name, turtle_files, url):
     "--header", is_flag=True, default=False, help="Print the header of column names"
 )
 @url_opt
-def query_cmd(repo_name, sparql_file, header, url):
+def query_cmd(repo_name : str, sparql_file : TextIO, header : bool, url : str) -> NoReturn:
     """
     Submit a SPARQL query
     """
@@ -143,23 +146,32 @@ def query_cmd(repo_name, sparql_file, header, url):
         else:
             return ""
 
-    results = cmd.sparql_query(url=url, repo_name=repo_name, sparql_file=sparql_file)
+    sparql_query = cmd.sparql_query(url=url, repo_name=repo_name, sparql_file=sparql_file)
+
+    results = sparql_query.convert()
+
     if header:
         print("\t".join(results["head"]["vars"]))
     for row in results["results"]["bindings"]:
         fields = (val(row, field) for field in results["head"]["vars"])
         print("\t".join(fields))
 
+    sys.exit(0)
+
 
 @click.command(name="construct")
 @repo_name_arg
 @sparql_file_arg
 @url_opt
-def construct_cmd(repo_name, sparql_file, url):
+def construct_cmd(repo_name : str, sparql_file : TextIO, url : str) -> NoReturn:
     """
     Submit a SPARQL CONSTRUCT query and return a Turtle formatted response
     """
-    return cmd.sparql_construct(url=url, repo_name=repo_name, sparql_file=sparql_file)
+    sparql_result = cmd.sparql_construct(url=url, repo_name=repo_name, sparql_file=sparql_file)
+
+    print(sparql_result.convert().decode("utf-8"))
+
+    sys.exit(0)
 
 
 # Thanks to Максим Стукало from https://stackoverflow.com/questions/47972638
@@ -179,21 +191,21 @@ class OrderedGroup(click.Group):
     context_settings=CONTEXT_SETTINGS,
 )
 @click.version_option(__version__, "-v", "--version", message=__version__)
-def cli():
+def cli_cmd():
     pass
 
 
-cli.add_command(construct_cmd)
-cli.add_command(load_cmd)
-cli.add_command(ls_files_cmd)
-cli.add_command(ls_repo_cmd)
-cli.add_command(make_cmd)
-cli.add_command(query_cmd)
-cli.add_command(rm_data_cmd)
-cli.add_command(rm_repo_cmd)
-cli.add_command(start_cmd)
-cli.add_command(update_cmd)
+cli_cmd.add_command(make_cmd)
+cli_cmd.add_command(start_cmd)
+cli_cmd.add_command(load_cmd)
+cli_cmd.add_command(query_cmd)
+cli_cmd.add_command(update_cmd)
+cli_cmd.add_command(construct_cmd)
+cli_cmd.add_command(ls_files_cmd)
+cli_cmd.add_command(ls_repo_cmd)
+cli_cmd.add_command(rm_data_cmd)
+cli_cmd.add_command(rm_repo_cmd)
 
 
 def main():
-    cli()
+    cli_cmd()
