@@ -5,3 +5,5 @@ all:
 	d79 load_gis gisaid.xls > .obs-gisaid.ttl
 	diff .obs-gisaid.ttl .exp-gisaid.ttl
 	rm .obs*
+	# ensure no usage requests fail
+	bash help.sh > /dev/null
