@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup # type: ignore
 
 from pgraphdb.version import __version__
 

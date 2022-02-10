@@ -1,3 +1,8 @@
+v0.3.3
+======
+
+ * Add mypy type annotations
+
 v0.3.2
 ======
 

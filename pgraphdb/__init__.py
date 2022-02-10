@@ -8,7 +8,7 @@ import sys
 import json
 import os
 from SPARQLWrapper import SPARQLWrapper, JSON, TURTLE # type: ignore
-from pgraphdb.util import handle_response
+from pgraphdb.util import handle_response, handle_http_response
 
 def openIfNotOpen(thingy : Union[TextIO, str]) -> TextIO:
     if isinstance(thingy, str):
@@ -69,7 +69,7 @@ def turtle_to_deletion_sparql(turtle : Iterable[str]) -> str:
     return sparql
 
 
-def rm_data(url : str, repo_name : str, turtle_file : Union[TextIO, str]) -> SPARQLWrapper:
+def rm_data(url : str, repo_name : str, turtle_file : Union[TextIO, str]) -> SPARQLWrapper.Wrapper.QueryResult:
     graphdb_url = f"{url}/repositories/{repo_name}/statements"
     f = openIfNotOpen(turtle_file)
     turtle_lines = f.readlines()
@@ -81,12 +81,12 @@ def rm_data(url : str, repo_name : str, turtle_file : Union[TextIO, str]) -> SPA
     sparql_result = sparql.query()
 
     # check response
-    handle_response(sparql_result.response)
+    handle_http_response(sparql_result.response)
 
     return sparql_result
 
 
-def update(url : str, repo_name : str, sparql_file : Union[TextIO, str]) -> SPARQLWrapper:
+def update(url : str, repo_name : str, sparql_file : Union[TextIO, str]) -> SPARQLWrapper.Wrapper.QueryResult:
     graphdb_url = f"{url}/repositories/{repo_name}/statements"
     sparql = SPARQLWrapper(graphdb_url)
 
@@ -98,12 +98,12 @@ def update(url : str, repo_name : str, sparql_file : Union[TextIO, str]) -> SPAR
     sparql_result = sparql.query()
 
     # check response
-    handle_response(sparql_result.response)
+    handle_http_response(sparql_result.response)
 
     return sparql_result
 
 
-def sparql_query(url : str, repo_name : str, sparql_file : Union[TextIO, str]) -> SPARQLWrapper:
+def sparql_query(url : str, repo_name : str, sparql_file : Union[TextIO, str]) -> SPARQLWrapper.Wrapper.QueryResult:
     graphdb_url = f"{url}/repositories/{repo_name}"
     sparql = SPARQLWrapper(graphdb_url)
     fh = openIfNotOpen(sparql_file)
@@ -113,12 +113,12 @@ def sparql_query(url : str, repo_name : str, sparql_file : Union[TextIO, str]) -
     sparql_result = sparql.query()
 
     # check response
-    handle_response(sparql_result.response)
+    handle_http_response(sparql_result.response, writeResult=False)
 
     return sparql_result
 
 
-def sparql_construct(url : str, repo_name : str, sparql_file : Union[str, TextIO]) -> SPARQLWrapper:
+def sparql_construct(url : str, repo_name : str, sparql_file : Union[str, TextIO]) -> SPARQLWrapper.Wrapper.QueryResult:
     graphdb_url = f"{url}/repositories/{repo_name}"
     sparql = SPARQLWrapper(graphdb_url)
     fh = openIfNotOpen(sparql_file)
@@ -128,7 +128,7 @@ def sparql_construct(url : str, repo_name : str, sparql_file : Union[str, TextIO
     query_result = sparql.query()
 
     # ensure the response is valid
-    handle_response(query_result.response)
+    handle_http_response(query_result.response)
 
     return query_result
 
