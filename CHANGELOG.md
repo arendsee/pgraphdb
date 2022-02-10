@@ -1,3 +1,10 @@
+v1.0.0
+======
+
+ This is my final release. Maintenance may be spotty going forward.
+
+ * Change return types from queries to SPARQLQuery objects
+
 v0.3.3
 ======
 
