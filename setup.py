@@ -1,6 +1,12 @@
 from setuptools import setup # type: ignore
 
-from pgraphdb.version import __version__
+# Initialize version variable for the linter, it will be assigned when version.py is evaluated
+__version__ : str
+exec(open('pgraphdb/version.py', "r").read())
+
+# Read the requirements from the requirements.txt file
+with open("requirements.txt", "r") as fh:
+    requirements = [r.strip() for r in fh.readlines()]
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -21,7 +27,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=[ "SPARQLWrapper" ],
+    install_requires=requirements,
     entry_points={"console_scripts": ["pgraphdb=pgraphdb.ui:main"]},
     py_modules=["pgraphdb"],
     zip_safe=False,
