@@ -1,4 +1,3 @@
-json
 click
 requests
 SPARQLWrapper
