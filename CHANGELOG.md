@@ -1,3 +1,9 @@
+v1.0.1
+======
+
+ * Fix dependency handling
+ * Add github actions workflow (testing is still VERY minimal)
+
 v1.0.0
 ======
 
