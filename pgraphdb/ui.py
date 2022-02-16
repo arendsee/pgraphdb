@@ -5,7 +5,6 @@ from typing import TextIO, List, Optional, BinaryIO
 from mypy_extensions import NoReturn
 
 import click
-import textwrap
 import json
 import sys
 import collections
